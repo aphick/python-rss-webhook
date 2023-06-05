@@ -10,7 +10,7 @@ It uses environment variables to configure behaviour. Below are the available en
 FEEDS="http://github.com/RocketChat/Rocket.Chat/releases.atom,https://about.gitlab.com/security-releases.xml"
 ```
 
-`WEBHOOK` a comma seperated list of compatible feeds:  
+`WEBHOOK` is the webhook url to post requests to:
 ```
 WEBHOOK="https://chat.internet.com/hooks/etc"
 ```
