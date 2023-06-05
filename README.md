@@ -7,8 +7,7 @@ It uses environment variables to configure behaviour. Below are the available en
 
 `FEEDS` a comma seperated list of compatible feeds:  
 ```
-FEEDS="http://github.com/RocketChat/Rocket.Chat/releases.atom,https://about.gitlab.com/security-
-releases.xml"
+FEEDS="http://github.com/RocketChat/Rocket.Chat/releases.atom,https://about.gitlab.com/security-releases.xml"
 ```
 
 `WEBHOOK` a comma seperated list of compatible feeds:  
