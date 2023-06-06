@@ -14,8 +14,7 @@ def PostHook(jsonEntry, webhook):
         headers={'Content-Type': 'application/json'}
     )
     if response.status_code != 200:
-        raise ValueError(
-            'Request to webhook returned an error %s, the response is:\n%s'
+        print('Request to webhook returned an error %s, the response is:\n%s'
             % (response.status_code, response.text)
     )
 
@@ -37,6 +36,7 @@ def GetFeeds(feeds, webhook, minutes):
                     "content": entry.content,
                     "link": entry.link
                 }
+                print("%s - Posting new entry - '%s'" % (now, entry.link))
                 PostHook(newEntry, webhook)
 
 def main():
