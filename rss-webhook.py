@@ -6,12 +6,9 @@ import datetime
 import json
 import requests
 from time import mktime
+import argparse
 
-feeds = os.environ.get('FEEDS').split(',')
-minutes = os.environ.get('MINUTES')
-webhook = os.environ.get('WEBHOOK')
-
-def PostHook(jsonEntry):
+def PostHook(jsonEntry, webhook):
     response = requests.post(
         webhook, data=json.dumps(jsonEntry),
         headers={'Content-Type': 'application/json'}
@@ -23,10 +20,9 @@ def PostHook(jsonEntry):
     )
 
 
-def GetFeeds():
+def GetFeeds(feeds, webhook, minutes):
     now = datetime.datetime.now()
     lastRun = now - datetime.timedelta(minutes=int(minutes))
-
     for feed in feeds:
         parsedFeeds = feedparser.parse(feed)
         for entry in parsedFeeds.entries:
@@ -41,6 +37,20 @@ def GetFeeds():
                     "content": entry.content,
                     "link": entry.link
                 }
-                PostHook(newEntry)
+                PostHook(newEntry, webhook)
 
-GetFeeds()
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("-f", "--feed", required=True,
+        action="append", help="feedparser compatible feed")
+    parser.add_argument("-w", "--webhook", required=True,
+        help="webhook to post to")
+    parser.add_argument("-m", "--minutes", required=True,
+        help="number of minutes since last run")
+
+    args = parser.parse_args()
+
+    GetFeeds(args.feed, args.webhook, args.minutes)
+
+if __name__ == "__main__":
+    main()
