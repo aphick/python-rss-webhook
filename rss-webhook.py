@@ -1,12 +1,21 @@
 #!/usr/bin/python3
 
 import feedparser
-import os
 import datetime
 import json
 import requests
-from time import mktime
 import argparse
+import sqlite3
+import hashlib
+
+def DbPop():
+
+    con = sqlite3.connect("webhook.db")
+    cur = con.cursor()
+    cur.execute("CREATE TABLE IF NOT EXISTS rss(feed, id, hash)")
+
+    return con
+
 
 def PostHook(jsonEntry, webhook):
     response = requests.post(
@@ -19,25 +28,32 @@ def PostHook(jsonEntry, webhook):
     )
 
 
-def GetFeeds(feeds, webhook, minutes):
+def GetFeeds(feeds, webhook, entries, database):
+    cur = database.cursor()
     now = datetime.datetime.now()
-    lastRun = now - datetime.timedelta(minutes=int(minutes))
     for feed in feeds:
         parsedFeeds = feedparser.parse(feed)
+        entInt = entries
         for entry in parsedFeeds.entries:
-            try:
-                ptime = entry.published_parsed
-            except:
-                ptime = entry.updated_parsed
-            pubDate = datetime.datetime.fromtimestamp(mktime(ptime))
-            if pubDate > lastRun:
+            storedEntry = "%s + %s" % (entry.id, entry.title)
+            m = hashlib.sha256(storedEntry.encode())
+            res = database.execute("SELECT hash FROM rss where hash='%s'" % (m.hexdigest()))
+            if not res.fetchone():
                 newEntry = {
                     "title": entry.title,
                     "content": entry.content,
                     "link": entry.link
                 }
-                print("%s - Posting new entry - '%s'" % (now, entry.link))
-                PostHook(newEntry, webhook)
+                if entInt > 0:
+                    print("%s - Posting new entry - '%s'" % (now, entry.link))
+                    PostHook(newEntry, webhook)
+                    entInt = entInt-1
+                cur.execute("""INSERT INTO rss VALUES 
+                        ('%s', '%s', '%s')""" % (feed, entry.id, m.hexdigest()))
+                database.commit()
+            else:
+                print("%s - No new entries for feed: %s" % (now, feed))
+                break
 
 def main():
     parser = argparse.ArgumentParser()
@@ -45,12 +61,12 @@ def main():
         action="append", help="feedparser compatible feed")
     parser.add_argument("-w", "--webhook", required=True,
         help="webhook to post to")
-    parser.add_argument("-m", "--minutes", required=True,
-        help="number of minutes since last run")
+    parser.add_argument("-e", "--entries", required=True,
+        type=int, help="number of new recent entries to post")
 
     args = parser.parse_args()
 
-    GetFeeds(args.feed, args.webhook, args.minutes)
+    GetFeeds(args.feed, args.webhook, args.entries, DbPop())
 
 if __name__ == "__main__":
     main()
