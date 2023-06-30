@@ -10,7 +10,7 @@ import hashlib
 
 def DbPop():
 
-    con = sqlite3.connect("webhook.db")
+    con = sqlite3.connect("rss-cache.db")
     cur = con.cursor()
     cur.execute("CREATE TABLE IF NOT EXISTS rss(feed, id, hash)")
 
