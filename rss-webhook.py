@@ -61,8 +61,8 @@ def main():
         action="append", help="feedparser compatible feed")
     parser.add_argument("-w", "--webhook", required=True,
         help="webhook to post to")
-    parser.add_argument("-e", "--entries", required=True,
-        type=int, help="number of new recent entries to post")
+    parser.add_argument("-e", "--entries", type=int,
+        default=1, help="number of new recent entries to post (default: 1)")
 
     args = parser.parse_args()
 

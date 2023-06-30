@@ -11,8 +11,8 @@ It uses flags to configure behaviour. Below are the available flags:
 `-w WEBHOOK, --webhook WEBHOOK` is the webhook url to post new entries to.
 
 
-`-m MINUTES, --minutes MINUTES` is an the amount of time between updates. Posts newer than this many minutes ago are sent to the webhook.
+`-e ENTRIES, --entries ENTRIES` the number of new entries to post. Defaults to "1" in order to reduce first run activity.
 
 ```
-./rss-webhook.py -f 'http://github.com/RocketChat/Rocket.Chat/releases.atom' -f 'https://about.gitlab.com/security-releases.xml' -w 'https://chat.internet.com/hooks/etc' -m 1440
+./rss-webhook.py -f 'http://github.com/RocketChat/Rocket.Chat/releases.atom' -f 'https://about.gitlab.com/security-releases.xml' -w 'https://chat.internet.com/hooks/etc' -e 2
 ```
