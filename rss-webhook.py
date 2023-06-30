@@ -54,6 +54,7 @@ def GetFeeds(feeds, webhook, entries, database):
             else:
                 print("%s - No new entries for feed: %s" % (now, feed))
                 break
+    database.close()
 
 def main():
     parser = argparse.ArgumentParser()
