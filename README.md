@@ -2,6 +2,7 @@
 
 Parses feeds using [feedparser](https://pypi.org/project/feedparser/) and POSTS new entries to a webhook.  
 Currently this script sends only `title`, `content`, and `link`, of any new entries, but others could be easily added.
+It stores retrieved entry ID's in an sqlite3 database named `rss-cache.db`.
 
 It uses flags to configure behaviour. Below are the available flags:  
 
