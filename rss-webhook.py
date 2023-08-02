@@ -39,11 +39,17 @@ def GetFeeds(feeds, webhook, entries, database):
             m = hashlib.sha256(storedEntry.encode())
             res = database.execute("SELECT hash FROM rss where hash='%s'" % (m.hexdigest()))
             if not res.fetchone():
-                newEntry = {
-                    "title": entry.title,
-                    "content": entry.content,
-                    "link": entry.link
-                }
+                try:
+                    newEntry = {
+                        "title": entry.title,
+                        "content": entry.content,
+                        "link": entry.link
+                    }
+                except AttributeError:
+                    newEntry = {
+                        "title": entry.title,
+                        "link": entry.link
+                    }                   
                 if entInt > 0:
                     print("%s - Posting new entry - '%s'" % (now, entry.link))
                     PostHook(newEntry, webhook)
